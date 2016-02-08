@@ -1,0 +1,27 @@
+---
+
+# common
+- hosts: all
+  become: yes
+  gather_facts: no
+
+  #common 
+  roles:
+   - common
+
+  # install nginx on app machines
+- hosts: app
+  become: yes
+
+  roles:
+   - app
+
+# lb
+- hosts: lb
+  become: yes
+  vars:
+   hapassword: admin
+   haproxyapp: lampapp
+
+  roles:
+   - lb
