@@ -1,9 +1,16 @@
 ---
+
+- name: add apt_repository
+  apt_repository: repo='ppa:vbernat/haproxy-1.5' state=present update_cache=yes
+
 - name: install haproxy and socat
-  apt: pkg={{ item }} state=latest
+  apt: pkg={{ item }} state=latest update_cache=yes
   with_items:
   - haproxy
   - socat
+
+- name: copy certificate files
+  copy: src=roles/lb/files/ dest=/etc/haproxy/ 
 
 - name: enable haproxy
   lineinfile: dest=/etc/default/haproxy regexp="^ENABLED" line="ENABLED=1"

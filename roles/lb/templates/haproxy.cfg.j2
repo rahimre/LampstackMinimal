@@ -35,13 +35,16 @@ defaults
     stats uri /haproxy?stats
     stats auth admin:{{ hapassword }}
 
+frontend https-frontend 
+    mode http
+    bind *:80 
+    bind *:443 ssl crt /etc/haproxy/mysitename.pem
+    bind *:444 ssl crt /etc/haproxy/mysitename.pem ca-file /etc/haproxy/myclientname.crt verify required
+    default_backend wwwbackend
 
-backend app
-    {% for host in groups['lb'] %}
-       listen {{ haproxyapp }} {{ hostvars[host]['ansible_eth0']['ipv4']['address'] }}:80
-    {% endfor %}
-    balance     roundrobin
+backend wwwbackend
+    balance roundrobin
     {% for host in groups['app'] %}
-        server {{ host }} {{ hostvars[host]['ansible_eth1']['ipv4']['address'] }} check port 80
+    server {{ host }} {{ hostvars[host]['ansible_eth1']['ipv4']['address'] }}:80 check port 80
     {% endfor %}
 
